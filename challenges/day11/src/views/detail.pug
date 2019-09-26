@@ -1,0 +1,12 @@
+extends layouts/index.pug
+
+block content
+    .movies__header
+        h1 #{movie.title} 
+    .movies__description
+        h4 #{movie.description_full}
+    .movies__genre
+        each genre in movie.genres
+            li=genre
+
+
