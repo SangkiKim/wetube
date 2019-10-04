@@ -1,0 +1,10 @@
+extends layouts/main.pug
+
+block content
+  h1=video.title
+  p=video.synopsis
+  if video.genres
+    ul
+      each genre in video.genres
+        li=genre
+  a(href=routes.editVideo(video.id)) Edit

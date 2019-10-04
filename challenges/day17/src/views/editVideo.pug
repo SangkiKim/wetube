@@ -1,0 +1,13 @@
+extends layouts/main.pug
+
+block content
+    p #{pageTitle} 
+    .form-container
+        form(action=routes.editVideo(video.id), method="post")
+            input(type="text", placeholder="Title", name="title",value=video.title)
+            input(type="text", placeholder="Year", name="year",value=video.year)
+            input(type="text", placeholder="Rating", name="rating",value=video.rating)
+            textarea(name="synopsis", placeholder="Synopsis",required=true)=video.synopsis
+            input(type="text", placeholder="Genres", name="genres",required=true,value=video.genres.toString())
+            input(type="submit", value="Edit Video")
+        a.form-container__link.form-container__link--delete(href=routes.deleteVideo(video.id)) Delete Video         
