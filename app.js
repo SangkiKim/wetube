@@ -38,12 +38,14 @@ const app = express();
 //     console.log("Between");
 //     next(); 
 // }
-
+ 
 //보안용
-app.use(helmet());
+app.use(helmet()); 
 
 //View engine을 pug로 설정
 app.set("view engine","pug");
+//누군가가 uploads로 간다면 directory에서 파일을 보내주는 middleware를 사용
+app.use("/uploads",express.static("uploads"));
 
 //use -> Middlewares
 app.use(cookieParser());
