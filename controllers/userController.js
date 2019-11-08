@@ -1,10 +1,13 @@
+import passport from  "passport";
 import routes from "../routes";
+import User from "../models/User";
+import { runInNewContext } from "vm";
 
 export const getJoin = (req,res) => {
     res.render("join", {pageTitle: "Join"});
 };
 
-export const postJoin = (req,res) => {
+export const postJoin = async (req,res,next) => {
     const {
         body : {name, email, password, password2}
     } = req;
@@ -13,19 +16,30 @@ export const postJoin = (req,res) => {
         res.status(400);
         res.render("join", {pageTitle: "Join"});
     } else {
-        // To Do: Register User
-        // To Do: Log User In
-        res.redirect(routes.home);
+        try{
+        const user = await User({
+            name,
+            email
+        });
+        await User.register(user, password);
+        next();
+        } catch(error) {
+            console.log(error);
+            res.redirect(routes.home);
+        } 
+  
     }
 
    
 };
   
 export const getLogin = (req,res) => res.render("login", {pageTitle : "Log In"});
-export const postLogin = (req,res) => {
-    res.redirect(routes.home);
-}
 
+//authenticate은 username(여기서는 email)과 password를 찾아보도록 설정되어 있다
+export const postLogin = passport.authenticate('local',{
+    failureRedirect: routes.login,
+    successRedirect: routes.home
+})
 
 
 export const logout = (req,res) => {

@@ -11,7 +11,10 @@ import helmet from "helmet";
 
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-
+import passport from "passport";
+import mongoose from "mongoose";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 //default로 export하는 경우에는 import app from "./app";
 //default로 export하지않는 경우에는 import {userRouter} 
 import userRouter from "./routers/userRouter";
@@ -19,10 +22,13 @@ import videoRouter from "./routers/videoRouter";
 import globalRouter from "./routers/globalRouter";
 import routes from "./routes";
 import { localsMiddleWare } from "./middlewares";
-
+import "./passport";
 //application 생성
 const app = express();
 
+const CookieStore = MongoStore(session);
+
+console.log(process.env.COOKIE_SECRET);
 
 //req = request object , res = response object
 //const handleHome = (req,res) => res.send("Hello frome school");
@@ -46,6 +52,7 @@ app.use(helmet());
 app.set("view engine","pug");
 //누군가가 uploads로 간다면 directory에서 파일을 보내주는 middleware를 사용
 app.use("/uploads",express.static("uploads"));
+app.use("/static",express.static("static"));
 
 //use -> Middlewares
 app.use(cookieParser());
@@ -56,7 +63,16 @@ app.use(bodyParser.urlencoded({extended : true}));
 //이 웹사이트에서 일어나는 모든일에 관하여 betweenHome미들웨어를 사용
 //순서가 정말 중요!
 app.use(morgan("dev"));
-
+app.use(
+    session({
+        secret : process.env.COOKIE_SECRET,
+        resave: true,
+        saveUninitialized: false,
+        store: new CookieStore({mongooseConnection: mongoose.connection})
+    })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(localsMiddleWare);
 
 //use -> 누군가가 ""에 접속하면 xxRouter를 전부 사용하겠다는 의미
